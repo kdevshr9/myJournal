@@ -12,13 +12,15 @@ class CreateUsersTable extends Migration {
 	 */
 	public function up()
 	{
-            Schema::create('users', function($table){
-                $table->increments('id');
-                $table->string('email')->unique();
-                $table->string('name');
-                $table->timestamps();
-            });
-	}
+            Schema::create('users', function($table) {
+            $table->increments('id');
+            $table->string('email')->unique();
+            $table->string('name');
+            $table->string('username', 16);
+            $table->string('password', 64);
+            $table->timestamps();
+        });
+    }
 
 	/**
 	 * Reverse the migrations.

@@ -11,27 +11,48 @@
 |
 */
 
-Route::get('/', function()
-{
-    return View::make('website')->with('title', 'Home');                                               //HOME PAGE
+Route::get('/', array('as' => 'home', function () {
+    return View::make('home')->with('title', 'myJournal | Home');;
+}));
+
+Route::get('login', array('as' => 'login', function () { 
+    return View::make('login')->with('title', 'myJournal | Login');
+}))->before('guest');
+
+Route::post('login', function () {
+    $user = array(
+        'username' => Input::get('username'),
+        'password' => Input::get('password')
+    );
+
+    if (Auth::attempt($user)) {
+        return Redirect::route('home')
+                        ->with(array('flash_notice'=>'You are successfully logged in.', 'title'=>'myJournal | Home'));
+    }
+
+    // authentication failure! lets go back to the login page
+    return Redirect::route('login')
+                    ->with(array('flash_notice'=>'Your username/password combination was incorrect.', 'title'=>'myJournal | Login'))
+                    ->withInput();
 });
 
-//Route::get('users', 'UserController@getIndex');
-Route::get('/login', function()
-{
-    return View::make('login')->with('title', 'Login');;                                                 //LOGIN PAGE
-});
+Route::get('logout', array('as' => 'logout', function () { 
+    Auth::logout();
+    return Redirect::route('home')
+        ->with('flash_notice', 'You are successfully logged out.');
+}))->before('auth');
+
+Route::get('profile', array('as' => 'profile', function () { 
+    return View::make('profile')->with('title', 'myJournal | Profile');
+}))->before('auth');
+
+
+
+
+
 Route::get('/register', function()
 {
     return View::make('register')->with('title', 'Register');;                                                 //LOGIN PAGE
-});
-//Route::post('/login', 'Authentication@login');
-Route::post('/login', function(){
-    $rules = array('username' => 'required', 'password' => 'required');
-    $validator = Validator::make(Input::all(), $rules);
-    if ($validator->fails()){
-        return Redirect::to('/login')->withErrors($validator);
-    }
 });
 
 Route::get('users', function(){
