@@ -3,9 +3,11 @@
         <title>{{ $title }}</title>
         <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
         {{ HTML::script('js/semantic.min.js'); }}
+        {{ HTML::script('js/general.js'); }}
         
         
         {{ HTML::style('css/semantic.min.css'); }}
+        {{ HTML::style('css/custom.css'); }}
     </head>
     <body>
 <!--        <div class="ui secondary pointing menu">
@@ -35,6 +37,9 @@
                 <a class="item" href="{{ url('profile') }}">
                     <i class="user icon"></i> Profile
                 </a>
+                <a class="item" href="{{ url('journal/create') }}">
+                    <i class="add icon"></i> Add new Journal
+                </a>
                 <a class="item" href="{{ url('logout') }}">
                     <i class="sign out icon"></i> Logout
                 </a>
@@ -47,7 +52,7 @@
 
         <!-- check for flash notification message -->
         @if(Session::has('flash_notice'))
-            <div id="ui floating message">{{ Session::get('flash_notice') }}</div>
+            <div class="ui floating message">{{ Session::get('flash_notice') }}</div>
         @endif
         
         @yield('content')

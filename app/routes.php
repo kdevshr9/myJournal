@@ -11,9 +11,10 @@
 |
 */
 
-Route::get('/', array('as' => 'home', function () {
-    return View::make('home')->with('title', 'myJournal | Home');;
-}));
+//Route::get('/', array('as' => 'home', function () {
+//    return View::make('home')->with('title', 'myJournal | Home');;
+//}));
+Route::get('/', array('as' => 'home', 'uses' => 'JournalController@index'));
 
 Route::get('login', array('as' => 'login', function () { 
     return View::make('login')->with('title', 'myJournal | Login');
@@ -46,8 +47,11 @@ Route::get('profile', array('as' => 'profile', function () {
     return View::make('profile')->with('title', 'myJournal | Profile');
 }))->before('auth');
 
+//Route::get('new_journal', array('as' => 'new_journal', function () { 
+//    return View::make('new_journal')->with('title', 'myJournal | New Journal');
+//}))->before('auth');
 
-
+Route::resource('journal', 'JournalController');
 
 
 Route::get('/register', function()

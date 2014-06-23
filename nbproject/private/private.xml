@@ -3,7 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/wamp/www/fashionwarehouse/app/views/website.blade.php</file>
+            <file>file:/C:/wamp/www/myJournal/app/views/new_journal.blade.php</file>
+            <file>file:/C:/wamp/www/myJournal/app/routes.php</file>
+            <file>file:/C:/wamp/www/myJournal/app/views/home.blade.php</file>
+            <file>file:/C:/wamp/www/myJournal/app/filters.php</file>
+            <file>file:/C:/wamp/www/myJournal/app/views/login.blade.php</file>
+            <file>file:/C:/wamp/www/myJournal/public/css/custom.css</file>
+            <file>file:/C:/wamp/www/myJournal/app/views/general.blade.php</file>
         </group>
     </open-files>
 </project-private>
