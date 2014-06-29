@@ -15,6 +15,13 @@
 //    return View::make('home')->with('title', 'myJournal | Home');;
 //}));
 Route::get('/', array('as' => 'home', 'uses' => 'JournalController@index'));
+//Route::get('/', function() {
+//		return View::make('journals/index')
+//
+//			// all the bears (will also return the fish, trees, and picnics that belong to them)
+//			->with('journals', Journal::all()->with('days'));
+//
+//	});
 
 Route::get('login', array('as' => 'login', function () { 
     return View::make('login')->with('title', 'myJournal | Login');
@@ -52,6 +59,7 @@ Route::get('profile', array('as' => 'profile', function () {
 //}))->before('auth');
 
 Route::resource('journal', 'JournalController');
+Route::resource('trip', 'TripController');
 
 
 Route::get('/register', function()

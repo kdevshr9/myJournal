@@ -14,11 +14,9 @@ class CreateJournalsTable extends Migration {
         Schema::create('journals', function($table) {
             $table->increments('id');
             $table->tinyInteger('type');
-            $table->date('date');
-            $table->date('date_from');
-            $table->date('date_to');
             $table->string('title');
-            $table->text('description');
+            $table->double('latitude');
+            $table->double('longitude');
             $table->timestamps();
             $table->integer('created_by');
             $table->integer('updated_by');

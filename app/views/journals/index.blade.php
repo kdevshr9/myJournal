@@ -5,11 +5,11 @@
 @foreach($journals as $key => $value)
     <div class="ui stacked segment">
         <h2><a class="" href="{{ URL::to('journal/' . $value->id) }}">{{ $value->title }}</a></h2>
-        @if ($value->type == 1)
-            {{ date('M j, Y', strtotime($value->date)) }}
-        @else
-            {{ date('M j, Y', strtotime($value->date_from)).'-'.date('M j, Y', strtotime($value->date_to)) }}
-        @endif
+        @foreach($value->days as $day)
+            @if ($value->type == 1)
+                {{ date('M j, Y', strtotime($day->date)) }}
+            @endif
+        @endforeach
         
         @if(Auth::check())
             <a class="btn btn-small btn-info" href="{{ URL::to('journal/' . $value->id . '/edit') }}"><i class="edit icon"></i></a>
@@ -19,11 +19,13 @@
             {{ Form::close() }}
         @endif
         
-        @if (strlen($value->description)>150)
-            {{ substr($value->description, 0, 400) }}.....
-        @else
-            {{ $value->description }}
-        @endif
+        @foreach($value->days as $day)
+            @if (strlen($day->description)>150)
+                {{ substr($day->description, 0, 400) }}.....
+            @else
+                {{ $day->description }}
+            @endif
+        @endforeach
     </div>
 @endforeach
 @stop

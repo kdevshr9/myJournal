@@ -7,17 +7,49 @@
 <div class="ui form segment">
     <input type="hidden" name="latitude" id="latitude"/>
     <input type="hidden" name="longitude" id="longitude"/>
-    <input type="hidden" name="type" id="type" value="1"/>
     <div class="grouped inline fields two column ui grid">
         <div class="column">
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input id="single_day_journal" name="type" checked="" type="radio" value="1">
+                    <label for="single_day_journal">Single Day Journal</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input id="multiple_day_journal" name="type" type="radio" value="2">
+                    <label for="multiple_day_journal">Multiple Day Journal</label>
+                </div>
+            </div>
             <div class="inline fields" id="single_day_journal_date">
                 <div class="date field">
                     <input placeholder="Journal Date" type="text" name="date" class="datepicker">
                 </div>
             </div>
+            <div class="inline fields hide" id="multiple_day_journal_date">
+                <div class="date field">
+                    <input placeholder="Journal Date From" name="date_from" type="text" class="datepicker">
+                </div>
+                <div class="field">
+                    <input placeholder="Journal Date To" name="date_to" type="text" class="datepicker">
+                </div>
+            </div>
         </div>
         <div class="column" id="gmap" style="height: 155px;"><img src="{{asset('images/your_location.jpg')}}"/></div>
     </div>
+    <!--    <div class="inline fields" id="single_day_journal_date">
+            <div class="date field">
+                <input placeholder="Journal Date" type="text" name="date" class="datepicker">
+            </div>
+        </div>
+        <div class="inline fields hide" id="multiple_day_journal_date">
+            <div class="date field">
+                <input placeholder="Journal Date From" name="date_from" type="text" class="datepicker">
+            </div>
+            <div class="field">
+                <input placeholder="Journal Date To" name="date_to" type="text" class="datepicker">
+            </div>
+        </div>-->
     <div class="inline field" >
         <div class="field">
             <input placeholder="Journal Title" type="text" name="title">
@@ -52,6 +84,16 @@ $(document).ready(function() {
     } else {
         document.getElementById('gmap').innerHTML = "Functionality not available";
     }
+    $('input[name="type"]').click(function() {
+        var value = $(this).val();
+        if (value === '1') {
+            $('#single_day_journal_date').addClass('show').removeClass('hide');
+            $('#multiple_day_journal_date').addClass('hide').removeClass('show');
+        } else if (value === '2') {
+            $('#single_day_journal_date').addClass('hide').removeClass('show');
+            $('#multiple_day_journal_date').addClass('show').removeClass('hide');
+        }
+    });
 });
 
 function show_map(loc) {
