@@ -10,4 +10,8 @@ class Journal extends Eloquent {
         return $this->hasMany('Day');
     }
 
+    public function photos() {
+        return $this->hasManyThrough('Photo', 'Day');
+    }
+
 }

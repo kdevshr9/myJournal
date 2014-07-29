@@ -9,7 +9,7 @@
                 <div class="date field">
                     <h2>{{ $journal->title }}</h2>
                     @foreach($journal->days()->get() as $day)
-                        {{ date('M j, Y', strtotime($day->date)) }}
+                        <p>{{ date('M j, Y', strtotime($day->date)) }}</p>
                     @endforeach
                     
                     @if(Auth::check())
@@ -28,6 +28,20 @@
     @foreach($journal->days()->get() as $day)
         {{ $day->description }}
     @endforeach
+    
+    <div class="ui two stackable items">
+        @foreach($journal->photos()->get() as $photo)
+            <div class="item">
+                <div class="image">
+                    <img src="{{ asset($photo->path.$photo->name) }}">
+                </div>
+                <div class="content">
+                    <!--<div class="name">Cute Dog</div>-->
+                    <p class="description">{{ $photo->caption }}</p>
+                </div>
+            </div>
+        @endforeach
+    </div>
 </div>
 
 <div id="disqus_thread"></div>

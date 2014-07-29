@@ -71,3 +71,6 @@ Route::get('users', function(){
     $users = User::all();
     return View::make('users')->with('users', $users);
 });
+
+Route::post('/journal/upload', array('as' => 'upload', 'uses' => 'JournalController@post_upload'));
+Route::post('/journal/delete', array('as' => 'delete', 'uses' => 'JournalController@post_delete'));

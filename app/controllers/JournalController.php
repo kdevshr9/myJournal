@@ -10,9 +10,10 @@ class JournalController extends \BaseController {
     public function index() {
         
         $journals = Journal::with('days')->get();
+        $journal_days = Day::with('photos')->get();
         // load the view and pass the journals
         return View::make('journals.index')
-                        ->with(array('journals' => $journals, 'title' => 'myJournal | Journal List'));
+                        ->with(array('journals' => $journals, 'journal_days' => $journal_days, 'title' => 'myJournal | Journal List'));
     }
 
     /**
@@ -30,7 +31,8 @@ class JournalController extends \BaseController {
      * @return Response
      */
     public function store() {
-//        echo 'type='. Input::get('latitude');exit;
+//        echo "<pre>";print_r($_POST);exit;
+//        echo 'type='. Input::get('date');exit;
         // validate
         // read more on validation at http://laravel.com/docs/validation
         $rules = array(
@@ -50,8 +52,9 @@ class JournalController extends \BaseController {
             $journal = new Journal;
             $journal->type = Input::get('type');
             $journal->title = Input::get('title');
-            $journal->latitude = Input::get('latitude');
-            $journal->longitude = Input::get('longitude');
+            $journal->latitude = Input::get('current_latitude');
+            $journal->longitude = Input::get('current_longitude');
+            $journal->formatted_address = Input::get('current_formatted_address');
             $journal->created_by = Auth::user()->id;
             $journal->save();
             
@@ -61,13 +64,70 @@ class JournalController extends \BaseController {
             $journal_day->journal_id = $journal->id;
             $journal_day->date = Input::get('date');
             $journal_day->description = Input::get('description');
+            $journal_day->latitude = Input::get('lat');
+            $journal_day->longitude = Input::get('lng');
+            $journal_day->formatted_address = Input::get('formatted_address');
             $journal_day->created_by = Auth::user()->id;
             $journal_day->save();
 
+            $caption = Input::get('caption');
+            $photo_name = Input::get('photo_name');
+            foreach($caption as $key=>$value){
+                $source = 'public/gallery_uploads/temp/' . Auth::user()->id . '/';
+                $destination = 'public/gallery_uploads/' . Auth::user()->id . '/' . $journal_day->id . '/';
+                if(!is_dir($destination)){
+                    mkdir($destination, 0777, true);
+                }
+                
+                if(copy($source.$photo_name[$key], $destination.$photo_name[$key])){
+                    unlink($source.$photo_name[$key]);
+                    $day_photo = new Photo;
+                    $day_photo->day_id = $journal_day->id;
+                    $day_photo->caption = $value;
+                    $day_photo->name = $photo_name[$key];
+                    $day_photo->path = 'gallery_uploads/' . Auth::user()->id . '/' . $journal_day->id . '/';
+                    $day_photo->created_by = Auth::user()->id;
+                    $day_photo->save();
+                }
+            }
             // redirect
             Session::flash('flash_notice', 'Successfully created Journal!');
             return Redirect::to('/');
         }
+    }
+    
+    public function post_upload() {
+//        $input = Input::all();
+//        $rules = array(
+//            'file' => 'image|max:3000',
+//        );
+//
+//        $validation = Validator::make($input, $rules);
+//
+//        if ($validation->fails())
+//        {
+//            return Response::make($validation->errors->first(), 400);
+//        }
+                
+        $file = Input::file('file');
+//        $destinationPath = 'public/gallery_uploads/' . Auth::user()->id;
+        $destinationPath = 'public/gallery_uploads/temp/' . Auth::user()->id;
+        $filename = str_random(6) . '_' .$file->getClientOriginalName();
+
+        $uploadSuccsess = Input::file('file')->move($destinationPath, $filename);
+
+
+        if ($uploadSuccsess) {
+            return Response::json($filename, 200);
+        } else {
+            return Response::json('error', 400);
+        }
+    }
+    
+    public function post_delete(){
+        $fileName = Input::get('fileName');
+        $destinationPath = 'public/gallery_uploads/temp/' . Auth::user()->id . '/' . $fileName;
+        unlink($destinationPath);
     }
 
     /**

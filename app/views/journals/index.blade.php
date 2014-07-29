@@ -4,10 +4,13 @@
 
 @foreach($journals as $key => $value)
     <div class="ui stacked segment">
-        <h2><a class="" href="{{ URL::to('journal/' . $value->id) }}">{{ $value->title }}</a></h2>
+        <h2>{{ $value->title }}</h2>
         @foreach($value->days as $day)
             @if ($value->type == 1)
-                {{ date('M j, Y', strtotime($day->date)) }}
+                <div class="ui label">
+                    <i class="calendar icon"></i>{{ date('M j, Y', strtotime($day->date)) }}&nbsp;
+                    <i class="map marker icon"></i>Location
+                </div>
             @endif
         @endforeach
         
@@ -21,9 +24,11 @@
         
         @foreach($value->days as $day)
             @if (strlen($day->description)>150)
-                {{ substr($day->description, 0, 400) }}.....
+                {{ substr($day->description, 0, 600) }}.....
+                <div class="mini ui button"><a class="" href="{{ URL::to('journal/' . $value->id) }}">View More</a></div>
             @else
                 {{ $day->description }}
+                <div class="mini ui button"><a class="" href="{{ URL::to('journal/' . $value->id) }}">View More</a></div>
             @endif
         @endforeach
     </div>
