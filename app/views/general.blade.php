@@ -18,12 +18,19 @@
             <a class="item" href="{{ url('profile') }}">
                 <i class="user icon"></i> Profile
             </a>
-            <a class="item" href="{{ url('journal/create') }}">
+            <div class="ui teal inverted dropdown item" id="test">
+                <i class="add icon"></i>New<i class="dropdown icon"></i>
+                <div class="menu">
+                    <a class="item popup" href="{{ url('journal/create') }}" title="Hello, I am a pop-up."><i class="text file icon"></i>Journal</a>
+                    <a class="item" href="{{ url('trip/create') }}" title="Multiple day journal"><i class="book icon"></i>Trip</a>
+                </div>
+            </div>
+<!--            <a class="item" href="{{ url('journal/create') }}">
                 <i class="add icon"></i> New Journal
             </a>
             <a class="item" href="{{ url('trip/create') }}">
                 <i class="add icon"></i> New Trip
-            </a>
+            </a>-->
             <a class="item" href="{{ url('logout') }}">
                 <i class="sign out icon"></i> Logout
             </a>

@@ -3,13 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/wamp/www/myJournal/app/models/Photo.php</file>
             <file>file:/C:/wamp/www/myJournal/app/models/Day.php</file>
+            <file>file:/C:/wamp/www/myJournal/app/models/journallocation.php</file>
             <file>file:/C:/wamp/www/myJournal/app/views/journals/show.blade.php</file>
+            <file>file:/C:/wamp/www/myJournal/app/models/daylocation.php</file>
             <file>file:/C:/wamp/www/myJournal/app/views/journals/create.blade.php</file>
-            <file>file:/C:/wamp/www/myJournal/app/database/migrations/2014_06_26_150341_create_journals_table.php</file>
             <file>file:/C:/wamp/www/myJournal/app/models/Journal.php</file>
             <file>file:/C:/wamp/www/myJournal/app/controllers/JournalController.php</file>
-            <file>file:/C:/wamp/www/myJournal/app/views/journals/index.blade.php</file>
         </group>
     </open-files>
 </project-private>

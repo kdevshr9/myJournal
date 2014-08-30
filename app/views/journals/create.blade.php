@@ -37,16 +37,15 @@
     
     <div class="field">        
         <div class="hid" id="journal_day_location">
-            <div class="map_canvas"></div>
-            <div class="ui fluid action input">
-                <input id="geocomplete" placeholder="Type in an address" type="text" value="">
-                <div class="ui button" id="journal_day_location_search_button">Search</div>
-                <div class="ui button" style="display: none" id="journal_day_location_reset_button">Reset</div>
+            <div class="map_canvas" id="journal_day_map"></div>
+            <div class="fluid action input">
+                <input id="journal_day_location_search_box" placeholder="Type in an address" type="text" value="">
             </div>
-            <input name="lat" id="journal_day_location_latitude" type="hidden" value="">
+<!--            <input name="lat" id="journal_day_location_latitude" type="hidden" value="">
             <input name="lng" id="journal_day_location_longitude" type="hidden" value="">
-            <input name="formatted_address" id="journal_day_location_formatted_address" type="hidden" value="">
+            <input name="formatted_address" id="journal_day_location_formatted_address" type="hidden" value="">-->
         </div>
+        <div id="journal_day_location_hidden_values"></div>
     </div>
 
     <div class="field" id="gallery">
@@ -81,7 +80,15 @@
                     </a>
                 </div>
                 <div class="content">
-                    <div class="name" data-dz-name></div>
+                    <div class="meta">                        
+                        <div class="ui dropdown">
+                            <input name="journal_day_photo_location[]" type="hidden">
+                            <div class="default text journal_day_photo_location label"><p>taken at...</p></div>
+                            <i class="dropdown icon journal_day_photo_location"></i>
+                            <div class="menu"></div>
+                        </div>
+                    </div>
+                    <!--<div class="name" data-dz-name></div>-->
                     <h5 class="ui red header" data-dz-errormessage></h5>
                     <div class="extra"><p class="size" data-dz-size></p></div>
                     <input type="text" placeholder="Caption" name="caption[]"/>
@@ -108,7 +115,7 @@
 {{ HTML::script('js/froala_editor/froala_editor.min.js'); }}
 {{ HTML::script('js/geoPosition.js'); }}
 {{ HTML::script('js/dropzone.min.js'); }}
-{{ HTML::script('js/jquery.geocomplete.min.js'); }}
+<!--{{ HTML::script('js/jquery.geocomplete.min.js'); }}-->
 <script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
 <!--<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>-->
 
@@ -141,30 +148,96 @@
 $(document).ready(function() {
     $('#save_button').click(function(){ $('#my-awesome-dropzone').submit(); });
     $('.dz-default').hide();
-    
-    $("#geocomplete").geocomplete({
-        map: ".map_canvas",
-        details: "form ",
-        markerOptions: {
-            draggable: true
-//            type: 'rect'
-//            animation: 'DROP'
+    $(document).on('click', '.journal_day_photo_location', function(){
+        var element = $(this);
+        var marker_name = [];
+        $(".journal_day_location_marker_name").each(function() {
+            marker_name.push($(this).val());
+        });
+        
+        element.parent().find('.menu').html('');
+        $.each(marker_name, function(key, value){
+//            $(this).append($("<option></option>").attr("value",key).text(value)); 
+            element.parent().find('.menu').append('<div class="item" data-value="'+value+'"><p>'+value+'</p></div>');
+            $('.ui.dropdown').dropdown();
+        });
+    });
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        var mapOptions = {
+            zoom: 17,
+            center: new google.maps.LatLng(2.205685, 102.25615500000004),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            scrollwheel: true
+        };
+        var map = new google.maps.Map(document.getElementById('journal_day_map'), mapOptions);
+        
+        
+        
+        var input = (document.getElementById('journal_day_location_search_box'));
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.bindTo('bounds', map);
+        
+        google.maps.event.addListener(autocomplete, 'place_changed', function() {
+            var place = autocomplete.getPlace();
+            if (!place.geometry) { return; }
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.location);
+                map.setZoom(17);  // Why 17? Because it looks good.
+            }
+        });
+        
+        
+        
+        google.maps.event.addListener(map, 'click', addMarker);
+ 
+        function addMarker(event) {
+            var latLng = event.latLng.lat()+'_'+event.latLng.lng();
+            var contentString = '<input type="text" placeholder="Enter place name" class="journal_day_location_marker_name" name="journal_day_location_marker_name[]" id="marker_name_'+latLng+'"/>';
+            var infowindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+            var marker = new google.maps.Marker({
+                position: event.latLng,
+                map: map,
+                draggable: true,
+                animation: google.maps.Animation.DROP,
+                icon: 'http://localhost:8000/images/google_map_marker.png'
+            });
+            infowindow.open(map,marker);
+            
+            var latLng_element = '<input type="hidden" name="journal_day_location_markers[]" id="JDLM_'+latLng+'" value="'+latLng+'"/>';
+            $('#journal_day_location_hidden_values').append(latLng_element);
+            setFormattedAddress_For_Journal_Day_Location_Marker(event.latLng.lat(), event.latLng.lng());
+            
+//            google.maps.event.addListener(marker, 'click', function(event) {
+//                marker.setMap(null);
+//                var latLng_element_id = event.latLng.lat()+'_'+event.latLng.lng();
+//                $('input[type="hidden"][id="'+latLng_element_id+'"]').remove();
+////                for (var i = 0, I = markers.length; i < I && markers[i] != marker; ++i);
+////                markers.splice(i, 1);
+//            });
+            google.maps.event.addListener(marker, 'dragstart', function(event) {
+                var latLng_element_id = event.latLng.lat()+'_'+event.latLng.lng();
+                $('input[type="hidden"][id="JDLM_'+latLng_element_id+'"]').remove();
+                $('input[type="hidden"][id="JDLMFA_'+latLng_element_id+'"]').remove();
+            });
+            google.maps.event.addListener(marker, 'dragend', function(event) {
+                var latLng = event.latLng.lat()+'_'+event.latLng.lng();
+                var latLng_element = '<input type="hidden" name="journal_day_location_markers[]" id="JDLM_'+latLng+'" value="'+latLng+'"/>';
+                $('#journal_day_location_hidden_values').append(latLng_element);
+                setFormattedAddress_For_Journal_Day_Location_Marker(event.latLng.lat(), event.latLng.lng());
+            });
+            
+            google.maps.event.addListener(infowindow,'closeclick',function(){
+                marker.setMap(null);
+                var latLng_element_id = marker.position.lat()+'_'+marker.position.lng();
+                $('input[type="hidden"][id="JDLM_'+latLng_element_id+'"]').remove();
+                $('input[type="hidden"][id="JDLMFA_'+latLng_element_id+'"]').remove();
+            });
         }
-    });
-    $("#geocomplete").bind("geocode:dragged", function(event, latLng) {
-        $("input[name=lat]").val(latLng.lat());
-        $("input[name=lng]").val(latLng.lng());
-        $("#journal_day_location_reset_button").show();
-    });
-    $("#journal_day_location_reset_button").click(function() {
-        $("#geocomplete").geocomplete("resetMarker");
-        $("#journal_day_location_reset_button").hide();
-        return false;
-    });
-    $("#journal_day_location_search_button").click(function() {
-        $("#geocomplete").trigger("geocode");
-    }).click();
-    
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
     
     
     
@@ -225,6 +298,25 @@ function set_formatted_address(lat, lon){
     request.send();
 }
 
+function setFormattedAddress_For_Journal_Day_Location_Marker(lat,lng){
+    var geocoder = new google.maps.Geocoder();
+    var latlng = new google.maps.LatLng(lat, lng);
+    geocoder.geocode({'latLng': latlng}, function(results, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+            if (results[1]) {
+                var address = results[1].formatted_address;
+                var latLng = lat+'_'+lng;
+                var latLng_element = '<input type="hidden" name="journal_day_location_marker_formatted_address[]" id="JDLMFA_'+latLng+'" value="'+address+'"/>';
+                $('#journal_day_location_hidden_values').append(latLng_element);
+            } else {
+                alert('No results found');
+            }
+        } else {
+            alert('Geocoder failed due to: ' + status);
+        }
+  });
+}
+
 var previewNode = document.querySelector("#template");
 previewNode.id = "";
 var previewTemplate = previewNode.parentNode.innerHTML;
@@ -257,6 +349,7 @@ Dropzone.options.myAwesomeDropzone = {
             file.previewElement.querySelector(".remove").style.display = "block";           //DISPLAY THE REMOVE BUTTON
             file.previewElement.querySelector(".progress").classList.add("successful");     //MAKE THE PROGRESS BAR SUCCESSFUL
             file.previewElement.querySelector(".progress").style.display = "none";          //HIDE THE PROGRESS BAR
+            $('.ui.dropdown').dropdown();
         });
         this.on("removedfile", function(file) {
             var server_file = $(file.previewTemplate).children('.serverFileName').val();
